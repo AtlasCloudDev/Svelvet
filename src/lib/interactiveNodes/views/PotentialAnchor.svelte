@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { findStore } from '../../store/controllers/storeApi';
-  import { TemporaryEdge } from '../models/TemporaryEdge';
-  import { writable, derived, get, readable } from 'svelte/store';
-  import { getPotentialAnchorById } from '../controllers/util';
+  import { onMount } from "svelte";
+  import { findStore } from "../../store/controllers/storeApi";
+  import { TemporaryEdge } from "../models/TemporaryEdge";
+  import { writable, derived, get, readable } from "svelte/store";
+  import { getPotentialAnchorById } from "../controllers/util";
   import type {
     NodeType,
     EdgeType,
     StoreType,
     TemporaryEdgeType,
     PotentialAnchorType,
-  } from '../../store/types/types';
-  import type { UserNodeType, UserEdgeType } from '../../types/types';
+  } from "../../store/types/types";
+  import type { UserNodeType, UserEdgeType } from "../../types/types";
 
-  import { beforeUpdate, afterUpdate } from 'svelte';
+  import { beforeUpdate, afterUpdate } from "svelte";
   export let canvasId;
   export let x;
   export let y;
@@ -39,12 +40,10 @@
   // aer cleared, otherwise the temporary edges are cleared
   let mouseHover = false;
   const pkStringGenerator = () => (Math.random() + 1).toString(36).substring(7);
-</script>
-
-<svelte:window
-  on:mousemove={(e) => {
+  const mousemove = (e) => {
     // imelements drawing an (temporary) edge from a potential anchor to the mouse cursor
     e.preventDefault();
+    console.log("test");
     if (isDragging) {
       temporaryEdgeStore.update((edges) => {
         if (edges.length !== 1)
@@ -56,8 +55,9 @@
         return [edge];
       });
     }
-  }}
-  on:mouseup={(e) => {
+  };
+
+  const mouseup = (e) => {
     isDragging = false; // prevent the new edge from moving
 
     // only do update if temporaryEdgeStore has one element, and if that tempEdge.targetId = potentialAnchorId
@@ -86,8 +86,16 @@
         return [];
       });
     }
-  }}
-/>
+  };
+  onMount(() => {
+    const graphview = document.getElementById("graphview-container");
+
+    if (graphview) {
+      graphview.addEventListener("mousemove", mousemove);
+      graphview.addEventListener("mouseup", mouseup);
+    }
+  });
+</script>
 
 <div
   on:mouseenter={(e) => {
@@ -134,8 +142,8 @@
           mouseX,
           mouseY,
           canvasId,
-          'straight',
-          'black'
+          "straight",
+          "black"
         );
         return [newTempEdge];
       } else {

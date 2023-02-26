@@ -1,5 +1,5 @@
 module.exports = {
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+	content: ['./src/**/*.{html,svelte}'],
 	theme: {
 		fontFamily: {
 			inter: ['Inter', 'sans-serif'],

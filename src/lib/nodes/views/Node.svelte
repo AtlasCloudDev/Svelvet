@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { afterUpdate } from 'svelte';
+  import { afterUpdate, onMount } from "svelte";
 
-  import { findStore } from '../../store/controllers/storeApi';
-  import type { NodeType } from '../../store/types/types';
+  import { findStore } from "../../store/controllers/storeApi";
+  import type { NodeType } from "../../store/types/types";
 
-  import EditNode from './EditNode.svelte';
-  import { writable, derived, get, readable } from 'svelte/store';
-  import { forceCssHeightAndWidth } from '../../customCss/controllers/getCss';
-  import { toggleExpandAndCollapse } from '../../collapsible/controllers/util';
+  import EditNode from "./EditNode.svelte";
+  import { writable, derived, get, readable } from "svelte/store";
+  import { forceCssHeightAndWidth } from "../../customCss/controllers/getCss";
+  import { toggleExpandAndCollapse } from "../../collapsible/controllers/util";
 
   export let node: NodeType;
   export let canvasId: string;
@@ -74,7 +74,7 @@
     nodeSelected.set(true);
   };
   const mousemove = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     // part of the "clickCallback" feature
     isUserClick = false;
     // part of the "drag node" feature
@@ -118,7 +118,7 @@
   };
 
   const mouseup = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     isSelected = false;
     // this implements the "clickCallback" feature
     if (node.clickCallback && isUserClick) node.clickCallback(node);
@@ -139,13 +139,15 @@
       });
     }
   };
+  onMount(() => {
+    const graphview = document.getElementById("graphview-container");
 
+    if (graphview) {
+      graphview.addEventListener("mousemove", mousemove);
+      graphview.addEventListener("mouseup", mouseup);
+    }
+  });
 </script>
-
-<svelte:window
-  on:mousemove={mousemove}
-  on:mouseup={mouseup}
-/>
 
 <!--EditNode component will be displayed if isEditing is true and if the canvas option "edtiable" is set true-->
 {#if isEditing && $editableOption}
@@ -157,11 +159,9 @@
   on:mouseleave={mouseleave}
   on:mousedown={mousedown}
   on:contextmenu={rightclick}
-
   on:touchmove={touchmove}
   on:touchstart={mousedown}
   on:touchend={mouseup}
-
   on:mouseenter={mouseenter}
   on:wheel={(e) => e.preventDefault()}
   class="Node {node.className}"
